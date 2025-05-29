@@ -1,0 +1,49 @@
+import org.apache.spark.SparkException; // Example import for specific exceptions
+import java.io.IOException; // Example import for specific exceptions
+
+/**
+ * Name: <Your Name>
+ * File: Project6.java
+ * Description: Driver class for Spark RDD stock analysis project.
+ * Delegates processing to StockAnalyzer class.
+ */
+public class Project6 {
+
+    /**
+     * Main method to drive the stock analysis.
+     * Handles top-level exceptions.
+     * @param args Command line arguments (not used directly for input/output paths here).
+     * Input and output paths should be managed within StockAnalyzer.
+     */
+    public static void main(String[] args) {
+        // Define input and output paths here or pass them to StockAnalyzer
+        // Ensure these are adapted for your LOCAL FILE SYSTEM as required [cite: 7]
+        String inputPath = "Project6.txt"; // Adjust if needed
+        String outputPath = "Project6_Output"; // Spark creates a directory
+
+        System.out.println("Starting Stock Analysis Spark Job...");
+
+        try {
+            // Instantiate the analyzer class [cite: 11]
+            StockAnalyzer analyzer = new StockAnalyzer();
+
+            // Delegate all work to a non-static method in the analyzer class [cite: 9]
+            analyzer.processStockData(inputPath, outputPath);
+
+            System.out.println("Spark Job completed successfully.");
+            System.out.println("Output saved to directory: " + outputPath);
+            System.out.println("Remember to consolidate the output into Project6-output.txt as per instructions."); // [cite: 16]
+
+        } catch (IOException e) {
+            System.err.println("Error during file operations: " + e.getMessage());
+            e.printStackTrace();
+        } catch (SparkException e) {
+            System.err.println("Error during Spark operations: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            // Catch-all for any other unexpected exceptions [cite: 10]
+            System.err.println("An unexpected error occurred: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+}

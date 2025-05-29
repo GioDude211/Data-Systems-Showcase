@@ -1,0 +1,170 @@
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import scala.Tuple2;
+
+import java.io.IOException; // For potential file operation errors
+import java.util.Collections; // For flatMapToPair empty list
+import java.util.List;      // For collectAsList
+import java.util.ArrayList; // For creating the final output list
+
+/**
+ * Name: <Your Name>
+ * File: StockAnalyzer.java
+ * Description: Performs Spark RDD analysis on stock data to find the max high price per symbol.
+ * Contains non-static methods for processing steps. [cite: 11, 13]
+ */
+public class StockAnalyzer { // Must be public, non-static, not nested [cite: 11]
+
+    private transient JavaSparkContext sparkContext; // Make transient if class needs serialization (though likely not here)
+
+    /**
+     * Initializes the Spark context.
+     * @param appName The name for the Spark application.
+     * @return An initialized JavaSparkContext.
+     * @throws IllegalStateException If Spark context cannot be created.
+     * Description: Sets up the Spark configuration and context. [cite: 22]
+     * Parameters: appName - String for the application name. [cite: 22]
+     * Return Value: Initialized JavaSparkContext. [cite: 22]
+     */
+    private JavaSparkContext initializeSpark(String appName) throws IllegalStateException {
+        try {
+            // Set up Spark configuration - run locally
+            SparkConf conf = new SparkConf().setAppName(appName).setMaster("local[*]");
+            // Create Spark context
+            return new JavaSparkContext(conf);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to initialize Spark context", e);
+        }
+    }
+
+    /**
+     * Reads the input file into a JavaRDD.
+     * @param sc The JavaSparkContext.
+     * @param inputPath Path to the input file.
+     * @return JavaRDD containing lines from the input file.
+     * @throws SparkException if there's an error reading the file with Spark.
+     * Description: Reads the specified text file using SparkContext. [cite: 22]
+     * Parameters: sc - Active JavaSparkContext, inputPath - String path to file. [cite: 22]
+     * Return Value: JavaRDD<String> with file lines. [cite: 22]
+     */
+    private JavaRDD<String> readData(JavaSparkContext sc, String inputPath) {
+        // Read the input file from the local file system [cite: 7]
+        return sc.textFile(inputPath);
+    }
+
+    /**
+     * Parses lines, filters invalid data, and finds the maximum high price per stock symbol.
+     * @param lines RDD of lines from the input file.
+     * @return JavaPairRDD with (Stock Symbol, Max High Price).
+     * Description: Parses CSV lines, extracts symbol and high price, handles errors,
+     * reduces to find max high per symbol, and sorts by symbol. [cite: 7, 14, 22]
+     * Parameters: lines - JavaRDD<String> of input data. [cite: 22]
+     * Return Value: Sorted JavaPairRDD<String, Double> of max highs. [cite: 22]
+     */
+    private JavaPairRDD<String, Double> analyzeData(JavaRDD<String> lines) {
+
+        // Optional: Filter out header row if present
+        // String header = lines.first();
+        // JavaRDD<String> dataLines = lines.filter(line -> !line.equals(header));
+        // Use 'dataLines' below if you filter the header
+
+        // Parse lines into (Symbol, HighPrice) pairs, handling errors [cite: 7]
+        JavaPairRDD<String, Double> symbolHighPairs = lines.flatMapToPair(line -> {
+            try {
+                String[] columns = line.split(",");
+                if (columns.length >= 7) { // Need columns up to index 6 (High price) [cite: 6]
+                    String symbol = columns[1].trim(); // Stock Symbol [cite: 6]
+                    String highPriceStr = columns[6].trim(); // High for the day [cite: 6]
+                    double highPrice = Double.parseDouble(highPriceStr);
+                    return Collections.singletonList(new Tuple2<>(symbol, highPrice)).iterator();
+                } else {
+                     System.err.println("Skipping malformed line (not enough columns): " + line);
+                     return Collections.emptyListIterator();
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Skipping line due to NumberFormatException on High price: " + line + "; Error: " + e.getMessage());
+                return Collections.emptyListIterator();
+            } catch (Exception e) {
+                 System.err.println("Skipping line due to unexpected error during parsing: " + line + "; Error: " + e.getMessage());
+                 return Collections.emptyListIterator();
+            }
+        });
+
+        // Reduce to find the maximum high price for each symbol [cite: 7]
+        JavaPairRDD<String, Double> maxHighPerSymbol = symbolHighPairs.reduceByKey(Double::max);
+        // Equivalent: JavaPairRDD<String, Double> maxHighPerSymbol = symbolHighPairs.reduceByKey((price1, price2) -> Math.max(price1, price2));
+
+
+        // Sort the results by Stock Symbol [cite: 14]
+        return maxHighPerSymbol.sortByKey(true); // true for ascending order
+    }
+
+   /**
+    * Formats the results and saves them to a text file.
+    * @param results RDD containing the sorted (Stock Symbol, Max High Price) pairs.
+    * @param outputPath Path for the output directory.
+    * Description: Formats the RDD results into strings, adds a header, and saves to a directory. [cite: 14, 22]
+    * Parameters: results - Sorted JavaPairRDD<String, Double>, outputPath - String directory path. [cite: 22]
+    * Return Value: None. [cite: 22]
+    */
+   private void saveResults(JavaPairRDD<String, Double> results, String outputPath) {
+        // Add header and format output lines
+        // Collect results to driver to add header (use with caution on very large datasets)
+        // Alternatively, create a header RDD and union it, then save.
+        List<Tuple2<String, Double>> collectedResults = results.collect();
+        List<String> formattedOutput = new ArrayList<>();
+
+        // Add header [cite: 14, 15]
+        formattedOutput.add("Stock Symbol\tHigh For The Day"); // Use tab or spaces as needed for alignment
+
+        // Format each result line
+        for (Tuple2<String, Double> tuple : collectedResults) {
+            formattedOutput.add(String.format("%s\t%.2f", tuple._1(), tuple._2())); // Format double to 2 decimal places
+        }
+
+        // Create an RDD from the formatted list (including header)
+        JavaRDD<String> outputRDD = sparkContext.parallelize(formattedOutput, 1); // Use 1 partition for single output file
+
+        // Save the formatted RDD to the output path (will create a directory)
+        // Handle potential existing directory issues if necessary
+        outputRDD.saveAsTextFile(outputPath); // [cite: 16] requires output in a file, Spark creates a directory
+   }
+
+    /**
+     * Orchestrates the stock data processing steps.
+     * @param inputPath Path to the input file.
+     * @param outputPath Path for the output directory.
+     * @throws IOException If file operations fail.
+     * @throws SparkException If Spark operations fail.
+     * Description: Main processing method called by the driver. Initializes Spark,
+     * reads data, analyzes it, saves results, and stops Spark. [cite: 12, 22]
+     * Parameters: inputPath - String, outputPath - String. [cite: 22]
+     * Return Value: None. [cite: 22]
+     */
+    public void processStockData(String inputPath, String outputPath) throws IOException {
+        // This method performs a single, well-defined task: processing stock data [cite: 12]
+        this.sparkContext = null; // Ensure context is fresh or null before starting
+        try {
+            // 1. Initialize Spark
+            this.sparkContext = initializeSpark("Stock Analysis Project 6");
+
+            // 2. Read Data
+            JavaRDD<String> lines = readData(sparkContext, inputPath);
+
+            // 3. Analyze Data (Parse, Reduce, Sort)
+            JavaPairRDD<String, Double> finalResults = analyzeData(lines);
+
+            // 4. Save Results
+            saveResults(finalResults, outputPath);
+
+        } finally {
+            // 5. Stop Spark context
+            if (this.sparkContext != null) {
+                this.sparkContext.stop();
+                this.sparkContext = null; // Clear context after stopping
+            }
+        }
+    }
+}
