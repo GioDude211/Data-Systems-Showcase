@@ -1,0 +1,3 @@
+Apache Spark program in Java built to read the input file from an external source (The
+Local File System) into the appropriate RDDs and use Java Functional Programming to
+find the maximum high for the day over several days for each symbol.
