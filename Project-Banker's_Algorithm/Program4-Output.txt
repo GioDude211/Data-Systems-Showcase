@@ -1,0 +1,256 @@
+Name:     Giovanni Vecchione
+Course:   COSC 4302 - Operating Systems
+Program:  4
+Due Date: 5/3/25
+
+Initializing Available Resources...
+Please enter 4 non-negative integers separated by spaces on a single line: 
+10 7 12 9
+Resource amount for resource type 0: 10
+
+Resource amount for resource type 1: 7
+
+Resource amount for resource type 2: 12
+
+Resource amount for resource type 3: 9
+
+Reading Max demand from file: src/Program4.txt...
+File Valid: Maximum Set...
+
+
+Commands: 
+RQ - Request
+RL - Release
+OP - Output Current Values for Data Structures
+
+Expected Input Format: Command CustomerNumber Resources1 Resources2 Resources3 Resources4
+Just input 'OP' for output values per specifications.
+Number of Customers Set for Program: 5
+
+Number of Resource Types Set for Program: 4
+
+Input 'Exit' to end program.
+
+
+Enter Command all together seperated by spaces: 
+RQ 0 1 1 1 1
+Safety Check Result: SAFE
+
+Request Accepted...
+
+Applying allocation...
+
+Arrays Updated...
+
+
+Commands: 
+RQ - Request
+RL - Release
+OP - Output Current Values for Data Structures
+
+Expected Input Format: Command CustomerNumber Resources1 Resources2 Resources3 Resources4
+Just input 'OP' for output values per specifications.
+Number of Customers Set for Program: 5
+
+Number of Resource Types Set for Program: 4
+
+Input 'Exit' to end program.
+
+
+Enter Command all together seperated by spaces: 
+OP
+Outputting Data Structure Values...
+Outputting Maximum Values: 
+7	5	3	6	
+3	2	9	2	
+9	0	2	5	
+2	6	5	4	
+4	3	11	7	
+
+Outputting Need Values: 
+6	4	2	5	
+3	2	9	2	
+9	0	2	5	
+2	6	5	4	
+4	3	11	7	
+
+Outputting Allocation Values: 
+1	1	1	1	
+0	0	0	0	
+0	0	0	0	
+0	0	0	0	
+0	0	0	0	
+
+Outputting Available Values:	9	6	11	8	
+
+Commands: 
+RQ - Request
+RL - Release
+OP - Output Current Values for Data Structures
+
+Expected Input Format: Command CustomerNumber Resources1 Resources2 Resources3 Resources4
+Just input 'OP' for output values per specifications.
+Number of Customers Set for Program: 5
+
+Number of Resource Types Set for Program: 4
+
+Input 'Exit' to end program.
+
+
+Enter Command all together seperated by spaces: 
+RQ 3 1 1 1 1
+Safety Check Result: SAFE
+
+Request Accepted...
+
+Applying allocation...
+
+Arrays Updated...
+
+
+Commands: 
+RQ - Request
+RL - Release
+OP - Output Current Values for Data Structures
+
+Expected Input Format: Command CustomerNumber Resources1 Resources2 Resources3 Resources4
+Just input 'OP' for output values per specifications.
+Number of Customers Set for Program: 5
+
+Number of Resource Types Set for Program: 4
+
+Input 'Exit' to end program.
+
+
+Enter Command all together seperated by spaces: 
+RQ 2 1 1 1 1
+Safety Check Result: UNSAFE
+
+Request DENIED...
+
+Request will cause a negative value for need.
+
+
+Commands: 
+RQ - Request
+RL - Release
+OP - Output Current Values for Data Structures
+
+Expected Input Format: Command CustomerNumber Resources1 Resources2 Resources3 Resources4
+Just input 'OP' for output values per specifications.
+Number of Customers Set for Program: 5
+
+Number of Resource Types Set for Program: 4
+
+Input 'Exit' to end program.
+
+
+Enter Command all together seperated by spaces: 
+OP
+Outputting Data Structure Values...
+Outputting Maximum Values: 
+7	5	3	6	
+3	2	9	2	
+9	0	2	5	
+2	6	5	4	
+4	3	11	7	
+
+Outputting Need Values: 
+6	4	2	5	
+3	2	9	2	
+9	0	2	5	
+1	5	4	3	
+4	3	11	7	
+
+Outputting Allocation Values: 
+1	1	1	1	
+0	0	0	0	
+0	0	0	0	
+1	1	1	1	
+0	0	0	0	
+
+Outputting Available Values:	8	5	10	7	
+
+Commands: 
+RQ - Request
+RL - Release
+OP - Output Current Values for Data Structures
+
+Expected Input Format: Command CustomerNumber Resources1 Resources2 Resources3 Resources4
+Just input 'OP' for output values per specifications.
+Number of Customers Set for Program: 5
+
+Number of Resource Types Set for Program: 4
+
+Input 'Exit' to end program.
+
+
+Enter Command all together seperated by spaces: 
+RL 0 1 0 1 0
+Validating Release...
+
+Valid Release: VALID
+
+Updating Arrays...
+
+Arrays Updated Successfully...
+
+
+Commands: 
+RQ - Request
+RL - Release
+OP - Output Current Values for Data Structures
+
+Expected Input Format: Command CustomerNumber Resources1 Resources2 Resources3 Resources4
+Just input 'OP' for output values per specifications.
+Number of Customers Set for Program: 5
+
+Number of Resource Types Set for Program: 4
+
+Input 'Exit' to end program.
+
+
+Enter Command all together seperated by spaces: 
+OP
+Outputting Data Structure Values...
+Outputting Maximum Values: 
+7	5	3	6	
+3	2	9	2	
+9	0	2	5	
+2	6	5	4	
+4	3	11	7	
+
+Outputting Need Values: 
+7	4	3	5	
+3	2	9	2	
+9	0	2	5	
+1	5	4	3	
+4	3	11	7	
+
+Outputting Allocation Values: 
+0	1	0	1	
+0	0	0	0	
+0	0	0	0	
+1	1	1	1	
+0	0	0	0	
+
+Outputting Available Values:	9	5	11	7	
+
+Commands: 
+RQ - Request
+RL - Release
+OP - Output Current Values for Data Structures
+
+Expected Input Format: Command CustomerNumber Resources1 Resources2 Resources3 Resources4
+Just input 'OP' for output values per specifications.
+Number of Customers Set for Program: 5
+
+Number of Resource Types Set for Program: 4
+
+Input 'Exit' to end program.
+
+
+Enter Command all together seperated by spaces: 
+Exit
+
+Program Terminated.
